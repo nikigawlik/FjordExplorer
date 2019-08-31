@@ -30,41 +30,59 @@ public class ProceduralGenerator : MonoBehaviour
         foreach (UnityTile tile in Object.FindObjectsOfType<UnityTile>())
         {
             if(tile.HeightDataState != TilePropertyState.Loaded) continue;
-            if(tiles.Add(tile)) {
+            if(tiles.Add(tile))
+            {
                 float size = 100f;
                 float exaggeration = 3f;
                 float baseScale = size / subdivs;
 
-                for(int i = 0; i < subdivs; i++) {
-                    for(int j = 0; j < subdivs; j++) {
-                        float y = tile.QueryHeightData((float)i / subdivs, (float)j / subdivs);
-                        if(y < 0.01f) continue;
-                        Vector2 gradient = new Vector2(
-                            tile.QueryHeightData((float)i / subdivs + 1f/subdivs, (float)j / subdivs) -
-                            tile.QueryHeightData((float)i / subdivs - 1f/subdivs, (float)j / subdivs)
-                            ,
-                            tile.QueryHeightData((float)i / subdivs, (float)j / subdivs + 1f/subdivs) -
-                            tile.QueryHeightData((float)i / subdivs, (float)j / subdivs - 1f/subdivs)
-                        );
-                        // if(gradient.magnitude < 1.5f && y > 2f) continue; // possible optimization
-                        int cliffs = 1 + (int)(gradient.magnitude/1.5f);
-
-                        for(int k = 0; k < cliffs; k++) {
-                            GameObject cube = Instantiate(rockPrefab, tile.transform.position, tile.transform.rotation);
-                            cube.transform.SetParent(tile.transform);
-                            cube.transform.localPosition = new Vector3(
-                                -size / 2 + (float)i / subdivs * size,
-                                y * exaggeration,
-                                -size / 2 + (float)j / subdivs * size
-                            );
-                            cube.transform.localScale = new Vector3(
-                                baseScale * 1.5f + k * 0.1f * baseScale,
-                                (1f + gradient.magnitude * 2f) * exaggeration / (1+k),
-                                baseScale * 1.5f + k * 0.1f * baseScale
-                            );
-                            cube.transform.Rotate(0, Random.Range(0,30), 0);
-                        }
+                tile.OnHeightDataChanged += (t) =>
+                {
+                    foreach (Transform child in t.transform)
+                    {
+                        if (child == t.transform) continue;
+                        GameObject.Destroy(child.gameObject);
                     }
+                    GenerateCubes(t, size, exaggeration, baseScale);
+                };
+                GenerateCubes(tile, size, exaggeration, baseScale);
+            }
+        }
+    }
+
+    private void GenerateCubes(UnityTile tile, float size, float exaggeration, float baseScale)
+    {
+        for (int i = 0; i < subdivs; i++)
+        {
+            for (int j = 0; j < subdivs; j++)
+            {
+                float y = tile.QueryHeightData((float)i / subdivs, (float)j / subdivs);
+                if (y < 0.01f) continue;
+                Vector2 gradient = new Vector2(
+                    tile.QueryHeightData((float)i / subdivs + 1f / subdivs, (float)j / subdivs) -
+                    tile.QueryHeightData((float)i / subdivs - 1f / subdivs, (float)j / subdivs)
+                    ,
+                    tile.QueryHeightData((float)i / subdivs, (float)j / subdivs + 1f / subdivs) -
+                    tile.QueryHeightData((float)i / subdivs, (float)j / subdivs - 1f / subdivs)
+                );
+                // if(gradient.magnitude < 1.5f && y > 2f) continue; // possible optimization
+                int cliffs = 1 + (int)(gradient.magnitude / 1.5f);
+                float rot = Random.Range(0, 90);
+                for (int k = 0; k < cliffs; k++)
+                {
+                    GameObject cube = Instantiate(rockPrefab, tile.transform.position, tile.transform.rotation);
+                    cube.transform.SetParent(tile.transform);
+                    cube.transform.localPosition = new Vector3(
+                        -size / 2 + (float)i / subdivs * size,
+                        y * exaggeration,
+                        -size / 2 + (float)j / subdivs * size
+                    );
+                    cube.transform.localScale = new Vector3(
+                        baseScale * 1.5f + k * 0.5f * baseScale,
+                        (1f + gradient.magnitude * 2f) * exaggeration / (1 + k),
+                        baseScale * 1.5f + k * 0.5f * baseScale
+                    );
+                    cube.transform.Rotate(0, rot, 0);
                 }
             }
         }

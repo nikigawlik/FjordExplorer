@@ -20,6 +20,7 @@ public class RowingController : MonoBehaviour
     private Rigidbody boat;
     private float timeLeftPressed = 0;
     private float timeRightPressed = 0;
+    private int direction = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -30,9 +31,21 @@ public class RowingController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
+            if(direction != -1) {
+                timeLeftPressed = timeRightPressed = 0;
+            }
+            direction = -1;
+        } else {
+            if(direction != 1) {
+                timeLeftPressed = timeRightPressed = 0;
+            }
+            direction = 1;
+        }
+
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            timeLeftPressed += Time.deltaTime;
+            timeLeftPressed = Mathf.Min(timeLeftPressed + Time.deltaTime, maxRowTime);
         }
         else
         {
@@ -41,7 +54,7 @@ public class RowingController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            timeRightPressed += Time.deltaTime;
+            timeRightPressed = Mathf.Min(timeRightPressed + Time.deltaTime, maxRowTime);
         }
         else
         {
@@ -51,8 +64,9 @@ public class RowingController : MonoBehaviour
 
     void FixedUpdate()
     {
-        float leftForce = force * Mathf.Sin(timeLeftPressed / maxRowTime * Mathf.PI);
-        float rightForce = force * Mathf.Sin(timeRightPressed / maxRowTime * Mathf.PI);
+        float leftForce = direction * force * Mathf.Sin(timeLeftPressed / maxRowTime * Mathf.PI);
+        float rightForce = direction * force * Mathf.Sin(timeRightPressed / maxRowTime * Mathf.PI);
+        // Debug.Log(leftForce + " " + rightForce);
 
         boat.AddForceAtPosition(this.gameObject.transform.forward * leftForce,
             this.gameObject.transform.TransformPoint(-forceOffsetToCenter, 0, 0));
