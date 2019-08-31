@@ -34,3 +34,22 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Exclude Mapbox etc.
+Assets/GoogleARCore.meta
+Assets/GoogleARCore/
+Assets/Mapbox.meta
+Assets/Mapbox/
+Assets/MapboxAR.meta
+Assets/MapboxAR/
+Assets/Resources/Mapbox.meta
+Assets/Resources/Mapbox/
+Assets/ThirdPartyAssets.meta
+Assets/ThirdPartyAssets/
+Assets/UnityARInterface.meta
+Assets/UnityARInterface/
+Assets/UnityARKitPlugin.meta
+Assets/UnityARKitPlugin/
+
+# logs 
+*.log
