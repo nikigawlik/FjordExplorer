@@ -38,12 +38,14 @@ public class ProceduralGenerator : MonoBehaviour
 
                 tile.OnHeightDataChanged += (t) =>
                 {
+                    Debug.Log("SDAFSDFA");
                     foreach (Transform child in t.transform)
                     {
                         if (child == t.transform) continue;
                         GameObject.Destroy(child.gameObject);
                     }
-                    GenerateCubes(t, size, exaggeration, baseScale);
+                    // GenerateCubes(tile, size, exaggeration, baseScale);
+                    Debug.Log(tiles.Remove(t));
                 };
                 GenerateCubes(tile, size, exaggeration, baseScale);
             }
