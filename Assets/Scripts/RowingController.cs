@@ -30,7 +30,7 @@ public class RowingController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             timeLeftPressed += Time.deltaTime;
         }
@@ -39,7 +39,7 @@ public class RowingController : MonoBehaviour
             timeLeftPressed = 0;
         }
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKey(KeyCode.RightArrow))
         {
             timeRightPressed += Time.deltaTime;
         }
